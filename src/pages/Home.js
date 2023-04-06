@@ -26,10 +26,10 @@ export default function Home() {
             Shopping List
           </text>
           <br />
-          <text style={{ fontSize: 20 }}>
+          {/* <text style={{ fontSize: 20 }}>
             Lorem ipsum dolor sit emmet, consectetur adipiscing elit.Sed eget
             libero feugiat, faucibus libero id, scelerisque quam
-          </text>
+          </text> */}
           <br />
           <button
             style={{
