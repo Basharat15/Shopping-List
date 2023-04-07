@@ -10,18 +10,36 @@ const Navbar = () => {
   const [open4, setOpen4] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [hint, setHint] = useState("");
   const [guideTitle, setGuideTitle] = useState("");
   const [guideCotent, setGuideContent] = useState("");
+  const [fNameError, setFNameError] = useState({ error: false, msg: "" });
+  const [lNameError, setLNameError] = useState({ error: false, msg: "" });
+  const [hintError, setHintError] = useState({ error: false, msg: "" });
   const [emailError, setEmailError] = useState({ error: false, msg: "" });
   const [passwordError, setPasswordError] = useState({ error: false, msg: "" });
 
   const registerHandler = async (event) => {
+    if (!firstName) {
+      setFNameError({ error: true, msg: "Please enter your first name" });
+      return;
+    }
+    if (!lastName) {
+      setLNameError({ error: true, msg: "Please enter your last name" });
+      return;
+    }
     if (!email) {
-      setEmailError({ error: true, msg: "" });
+      setEmailError({ error: true, msg: "Please enter your email address" });
       return;
     }
     if (!password) {
-      setPasswordError({ error: true, msg: "" });
+      setPasswordError({ error: true, msg: "Please enter your password" });
+      return;
+    }
+    if (!hint) {
+      setHintError({ error: true, msg: "Please enter your password hint" });
       return;
     }
     event.preventDefault();
@@ -31,31 +49,36 @@ const Navbar = () => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log(user);
-        alert("You have registered successfully");
-        // firebase
-        //   .firestore()
-        //   .collection("Users")
-        //   .doc(user.uid)
-        //   .set({
-        //     userId: user.uid,
-        //     // firstName: firstName,
-        //     // lastName: lastName,
-        //     email: email,
-        //   })
-        //   .then(() => {
-        //     setOpen2(false);
-        //     alert("You have been successfully registered.");
-        //     // setFirstName("");
-        //     // setLastName("");
-        //     setEmail("");
-        //     setPassword("");
-        //   })
-        //   .catch((error) => {
-        //     alert(error);
-        //     setEmail("");
-        //     setPassword("");
-        //   });
+        // console.log(user);
+        // alert("You have registered successfully");
+        firebase
+          .firestore()
+          .collection("Users")
+          .doc(user.uid)
+          .set({
+            userId: user.uid,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            passwordHint: hint,
+          })
+          .then(() => {
+            setOpen2(false);
+            alert("You have been successfully registered.");
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setPassword("");
+            setHint("");
+          })
+          .catch((error) => {
+            alert(error);
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setPassword("");
+            setHint("");
+          });
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -247,6 +270,41 @@ const Navbar = () => {
         <form>
           <div className="mb-3">
             <label for="exampleInputEmail1" className="form-label">
+              First Name
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              // id="exampleInputEmail1"
+              // aria-describedby="emailHelp"
+              onChange={(text) => {
+                setFNameError({ error: false, msg: "" });
+
+                setFirstName(text.target.value);
+              }}
+            />
+            {fNameError.error ? (
+              <p class="fw-lighter">{fNameError.msg}</p>
+            ) : null}
+            <label for="exampleInputEmail1" className="form-label">
+              Last Name
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              // id="exampleInputEmail1"
+              // aria-describedby="emailHelp"
+              onChange={(text) => {
+                setLNameError({ error: false, msg: "" });
+
+                setLastName(text.target.value);
+              }}
+            />
+            {lNameError.error ? (
+              <p class="fw-lighter">{lNameError.msg}</p>
+            ) : null}
+
+            <label for="exampleInputEmail1" className="form-label">
               Email address
             </label>
             <input
@@ -261,7 +319,7 @@ const Navbar = () => {
               }}
             />
             {emailError.error ? (
-              <p class="fw-lighter">Please enter your email</p>
+              <p class="fw-lighter">{emailError.msg}</p>
             ) : null}
           </div>
           <div className="mb-3">
@@ -279,8 +337,23 @@ const Navbar = () => {
               }}
             />
             {passwordError.error ? (
-              <p class="fw-lighter">Please enter your password</p>
+              <p class="fw-lighter">{passwordError.msg}</p>
             ) : null}
+            <label for="exampleInputEmail1" className="form-label">
+              Password Hint
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              // id="exampleInputEmail1"
+              // aria-describedby="emailHelp"
+              onChange={(text) => {
+                setHintError({ error: false, msg: "" });
+
+                setHint(text.target.value);
+              }}
+            />
+            {hintError.error ? <p class="fw-lighter">{hintError.msg}</p> : null}
           </div>
 
           <button
